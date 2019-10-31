@@ -120,6 +120,60 @@ def splitIntoSortedChunks(entryfile):
 
 # STUDENT CODE goes here.
 
+def mergeFiles(a, b, c):
+    """Merge files temp_a_b and temp_b_c to create temp_a_c."""
+    f_ab = BufferedInput("temp_{}_{}".format(a, b), 0.3)
+    f_bc = BufferedInput("temp_{}_{}".format(b, c), 0.3)
+    f_ac = BufferedOutput("temp_{}_{}".format(a, c), 0.3)
+
+    line_ab = f_ab.readline()
+    line_bc = f_bc.readline()
+    # Only runs while at least one file still has contents to merge
+    while line_ab or line_bc:
+        if not line_ab:
+            # ab is done, so it has to be bc
+            f_ac.writeline(line_bc)
+            line_bc = f_bc.readline()
+        elif not line_bc:
+            # bc is done, so it has to be ab
+            f_ac.writeline(line_ab)
+            line_ab = f_ab.readline()
+        else:
+            # both still to be merged => write the line that should be first
+            if line_ab < line_bc:
+                f_ac.writeline(line_ab)
+                line_ab = f_ab.readline()
+            else:
+                f_ac.writeline(line_bc)
+                line_bc = f_bc.readline()
+    f_ab.close()
+    f_bc.close()
+    f_ac.flush()
+
+    os.remove("temp_{}_{}".format(a, b))
+    os.remove("temp_{}_{}".format(b, c))
+    return "temp_{}_{}".format(a, c)
+
+
+def mergeFilesInRange(a, c):
+    if c - a == 2:
+        # The lowest case - only two files => join them
+        return mergeFiles(a, a+1, c)
+    elif c - a > 2:
+        # We need to divide work here
+        p = (a + c) // 2
+        mergeFilesInRange(a, p)
+        mergeFilesInRange(p, c)
+        # Here it recombines
+        return mergeFiles(a, p, c)
+    elif c - a == 1:
+        # This is already the file
+        # this portion should never run if we give the function valid arguments,
+        # it just exists so that there is always a valid output (for input that
+        # is invalid but still sensible (the file actually exists)
+        return "temp_{}_{}".format(a, c)
+    # other cases (a >= c) should never happen, and they do not have any obvious
+    # solution, so they are not implemented
     
 # Putting it all together:
 
