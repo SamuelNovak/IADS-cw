@@ -53,6 +53,85 @@ class ItemStream:
 
 # STUDENT CODE goes here.
 
+from time import sleep
+
+class HitStream():
+    def __init__(self, itemStreams, lineWindow, minRequired):
+        if not itemStreams:
+            raise Exception("No streams suppied.")
+        
+        self.itemStreams = itemStreams
+        self.lineWindow = lineWindow
+        self.minRequired = minRequired
+
+        # positions in the corresponding itemstreams
+        self.line = 0
+        # Assuming they always all start with the same document
+        self._docs = sorted(index_build.CorpusFiles.keys())
+        self.doc = self._docs.pop(0)
+
+    def next(self):
+        # repeat this until it finds a match or all the streams end
+        while True:
+            # For checking whether we need to search the next document
+            next_doc = []
+            lines = []
+            # store those streams that are still in this doc (used later)
+            streams_in_doc = []
+            # find next line in one of the streams (still in the same document)
+            for s in range(len(self.itemStreams)):
+                stream = self.itemStreams[s]
+                pk = stream.peek()
+                if pk:
+                    d, l = stream.peek()
+                    if d == self.doc:
+                        next_doc.append(False)
+                        lines.append((s, l))
+                        streams_in_doc.append(stream)
+                    else:
+                        next_doc.append(True)
+                    # print(lines, next_doc)
+            
+            # if all streams are now in a different document, go to the next document
+            if all(next_doc):
+                # check if there even is a document to search left
+                # (although this shouldn't ever happen) # TODO dead code
+                if not self._docs:
+                    return None
+                else:
+                    # go to next document, reset line to 0
+                    self.doc = self._docs.pop(0)
+                    continue
+
+            # if the same file => increment line where we're looking
+            # also store which stream it was that had the min line
+            minStream, self.line = sorted(lines, key=lambda x: x[1])[0]
+            # print("minStream:", minStream, "| Looking around line:", self.line)
+
+            # count how many streams have an entry within our bounds
+            # only go through the streams not yet pointing to another document
+            # (so we don't have to loop through those that are potentially already in another)
+            count = 0
+            for stream in streams_in_doc:
+                pk = stream.peek()
+                if pk:
+                    d, l = stream.peek()
+                    if self.line <= l <= self.line + self.lineWindow - 1:
+                        count += 1
+
+            # increment the stream that had the min value
+            self.itemStreams[minStream].next()
+
+            # print("-->", count)
+            if count >= self.minRequired:                
+                return (self.doc, self.line)
+            
+            # TODO here it searches for matches in the other streams
+            # print("D:", self.doc, "W:", self.line)
+            count = 0
+            sleep(0.1)
+
+
 
 # Displaying hits as corpus quotations:
 
