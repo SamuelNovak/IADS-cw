@@ -23,11 +23,11 @@ class Graph:
                     # also convert to integers
                     ns = [int(i) for i in ls.split() if i]
                     lines.append(tuple(ns))
-        
+                    
             
         if n == -1: # Euclidean case
             self.n = len(lines)
-            self.dists = [[0 for j in range(self.n)] for i in range(self.n)]
+            self.dists = [[0 for j in range(self.n)] for i in range(self.n)] # allocate table space
             for i in range(self.n):
                 for j in range(i, self.n):
                     if i == j:
@@ -38,15 +38,25 @@ class Graph:
                         
         else: # General case
             self.n = n
+            self.dists = [[0 for j in range(self.n)] for i in range(self.n)] # allocate table space
+            for i, j, w in lines:
+                self.dists[i][j] = w
+                self.dists[j][i] = w
 
-        print(lines)
+        self.perm = list(range(self.n)) # initialize permutation, such that initially perm[i] = i
+                
         for i in range(self.n):
             print(self.dists[i])
 
     # Complete as described in the spec, to calculate the cost of the
     # current tour (as represented by self.perm).
     def tourValue(self):
-        pass
+        s = 0
+        for i in range(self.n-1):
+            s += self.dists[self.perm[i]][self.perm[i+1]]
+        s += self.dists[self.perm[self.n-1]][self.perm[0]]
+        return s
+        # return sum([self.dists[self.perm[i]][self.perm[(i+1) % self.n]] for i in range(self.n)]) # closely following the mathematical definition
     
     # Attempt the swap of cities i and i+1 in self.perm and commit
     # commit to the swap if it improves the cost of the tour.
