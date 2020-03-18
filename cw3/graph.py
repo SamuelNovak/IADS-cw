@@ -51,18 +51,31 @@ class Graph:
     # Complete as described in the spec, to calculate the cost of the
     # current tour (as represented by self.perm).
     def tourValue(self):
-        s = 0
-        for i in range(self.n-1):
-            s += self.dists[self.perm[i]][self.perm[i+1]]
-        s += self.dists[self.perm[self.n-1]][self.perm[0]]
-        return s
-        # return sum([self.dists[self.perm[i]][self.perm[(i+1) % self.n]] for i in range(self.n)]) # closely following the mathematical definition
+        # s = 0
+        # for i in range(self.n-1):
+        #     s += self.dists[self.perm[i]][self.perm[i+1]]
+        # s += self.dists[self.perm[self.n-1]][self.perm[0]]
+        # return s
+        return sum([
+            self.dists [self.perm[i]] [self.perm[(i+1) % self.n]]
+            for i in range(self.n)]) # closely following the mathematical definition
     
     # Attempt the swap of cities i and i+1 in self.perm and commit
     # commit to the swap if it improves the cost of the tour.
     # Return True/False depending on success.
     def trySwap(self,i):
-        pass
+        w_original = self.tourValue() # store original weight
+        i_original = self.perm[i] # for swapping
+        self.perm[i] = self.perm[(i+1) % self.n]
+        self.perm[(i+1) % self.n] = i_original
+
+        w_new = self.tourValue()
+        if w_new < w_original:
+            return True
+        else:
+            self.perm[(i+1) % self.n] = self.perm[i]
+            self.perm[i] = i_original
+            return False
 
     # Consider the effect of reversiing the segment between
     # self.perm[i] and self.perm[j], and commit to the reversal
