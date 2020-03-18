@@ -82,7 +82,8 @@ class Graph:
     # if it improves the tour value.
     # Return True/False depending on success.              
     def tryReverse(self,i,j):
-        pass
+        w_original = self.tourValue() # store original weight
+                
 
     def swapHeuristic(self):
         better = True
