@@ -103,7 +103,19 @@ class Graph:
             + self.dists[self.perm[i]][self.perm[(j+1) % self.n]]
 
         if new < original: # reverse is better, commit
-            # reverse subsequence here
+            perm = list(self.perm[:])
+            for k in range((j-i)//2+1):
+                x = self.perm[i + k]
+                perm[i + k] = self.perm[j - k]
+                perm[j - k] = x
+            # perm = list(self.perm)
+            # self.perm[i:j+1] = self.perm[i:j+1][::-1]
+
+            print("Reversing from", i, "to", j)
+            for k in range(self.n):
+                print(k, self.perm[k], "+" if i <= k <= j else "=", perm[k], k,
+                      sep="\t\t")
+            self.perm = perm[:]
             return True
         else:
             return False
