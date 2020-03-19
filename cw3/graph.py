@@ -142,5 +142,21 @@ class Graph:
     # from node 0, taking the closest (unused) node as 'next'
     # each time.
     def Greedy(self):
-        pass
-    
+        # using a list of unused nodes
+        # I originally wanted to have a list of booleans, but this is better,
+        # because each individual search will be faster and the cost of removing
+        # elements will be to some degree amortized
+        # (it would be even more efficient with a linked list, keeping this as an idea for later)
+        unused = list(range(1, self.n)) # starting at 0, so it's not unused
+        self.perm[0] = 0
+        for i in range(self.n-1): # n-1 because we want to be setting i+1 (i here is used just for iterating over the permutation)
+            
+            # argmin{j in unused} over distance from self.perm[i] to j
+            minj = min(
+                [(j, self.dists[self.perm[i]][j])
+                 for j in unused], key=lambda x: x[1]
+            )[0]
+            
+            self.perm[i+1] = minj
+            unused.remove(minj)
+            
