@@ -64,26 +64,49 @@ class Graph:
     # commit to the swap if it improves the cost of the tour.
     # Return True/False depending on success.
     def trySwap(self,i):
-        w_original = self.tourValue() # store original weight
-        i_original = self.perm[i] # for swapping
-        self.perm[i] = self.perm[(i+1) % self.n]
-        self.perm[(i+1) % self.n] = i_original
+        # self.dists[i][j] == self.dists[j][i] # symmetric matrix
+        # so when we have (in the permutation) some nodes ..., a, b, c, d,...
+        # and we swap b & c (so we get ..., a, c, b, d,...), we only need
+        # to compare the distances (w(a,b) + w(c,d)) to (w(a,c) + w(b,d))
+        # (where w is the weight function, repr. by self.dists)
+        original = self.dists[self.perm[(i-1) % self.n]][self.perm[i]] \
+            + self.dists[self.perm[(i+1) % self.n]][self.perm[(i+2) % self.n]]
+        
+        new = self.dists[self.perm[(i-1) % self.n]][self.perm[(i+1) % self.n]] \
+            + self.dists[self.perm[i]][self.perm[(i+2) % self.n]]
 
-        w_new = self.tourValue()
-        if w_new < w_original:
+        if new < original: # swap is better, perform it
+            # DEBUG # print("Swap at {i} ({a}, {b}, {c}, {d}) -> ({a}, {c}, {b}, {d}): (O,N) = ({o}, {n})".format(i=i, a=self.perm[(i-1)%self.n], b=self.perm[i], c=self.perm[(i+1)%self.n], d=self.perm[(i+2)%self.n], o=original, n=new))
+            i_original = self.perm[i]
+            self.perm[i] = self.perm[(i+1) % self.n]
+            self.perm[(i+1) % self.n] = i_original
             return True
-        else:
-            self.perm[(i+1) % self.n] = self.perm[i]
-            self.perm[i] = i_original
+        else: # swap is not good, ignore it
             return False
+            
 
     # Consider the effect of reversiing the segment between
     # self.perm[i] and self.perm[j], and commit to the reversal
     # if it improves the tour value.
     # Return True/False depending on success.              
     def tryReverse(self,i,j):
-        w_original = self.tourValue() # store original weight
-                
+        # similarly to the Swap heuristic, the internal weights of some
+        # subsequence won't be changed and we only need to compare the enpoints,
+        # i.e. where the reversed subsequence touches the rest of the permutation
+
+        # also, thanks to how the iteration is done in TwoOptHeuristic,
+        # we can always assume i < j
+        original = self.dists[self.perm[(i-1) % self.n]][self.perm[i]] \
+            + self.dists[self.perm[j]][self.perm[(j+1) % self.n]]
+
+        new = self.dists[self.perm[(i-1) % self.n]][self.perm[j]] \
+            + self.dists[self.perm[i]][self.perm[(j+1) % self.n]]
+
+        if new < original: # reverse is better, commit
+            # reverse subsequence here
+            return True
+        else:
+            return False
 
     def swapHeuristic(self):
         better = True
