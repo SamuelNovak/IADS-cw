@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\todo}[1]{\textcolor{red}{$\star$~TODO: \textbf{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\randint}{\operatorname{randint}}
+
+\newcommand{\bb}[1]{\textbf{#1}}
+\newcommand{\uu}[1]{\underline{#1}}
+\newcommand{\ii}[1]{\textit{#1}}
+
+\newenvironment{pyc}{\begin{lstlisting}[language=Python]}{\end{lstlisting}}
+\newcommand{\py}[1]{\lstinline[language=Python]{#1}}
+
+\renewcommand{\thesection}{\Alph{section}}
+\setcounter{section}{2}
+
+\title{IADS Coursework 3}
+\author{Samo Nov\'ak (s1865783)}
+\date{March 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Own Algorithm}
+
+\section{Experiments}
+
+In this part, we were to generate (or write a generator for) many different
+test cases and quantitatively measure how each heuristic (Swap, 2-Opt,
+Greedy, \todo{own}) performs.
+
+\subsection{Test generation}
+
+Firstly, let us summarize the assumptions and setting of the problem:
+\begin{itemize}
+\item We have an \uu{undirected}, \uu{complete} graph $G=(V,E)$ where $|V|=n$.
+\item We have a weight function $w:E\to\R^{+}$, such that
+  $\forall i,j\in V \ldotp w(i,j) = w(j,i)$, which will be represented as
+  a \uu{symmetric} matrix \py{Graph.dists[i][j]}\,$= w(i,j)$).
+  We assume $\forall i\in V\ldotp w(i,i)=0$.
+\item We have three cases of our problem: \uu{general} TSP
+  (no other constraints), \uu{metric} TSP ($w$ is a metric, so
+  $\forall u,v,x\in V\ldotp w(u,v)\le w(u,x) + w(x,v)$), and
+  \uu{Euclidean} TSP (the graph is embedded in a plane, this is also metric).
+\end{itemize}
+
+The test cases could be generated as completely random graphs. For small graphs
+(\todo{how big?}), it is then feasible to compute the best path, so that we can
+compare it to the results from the tested heuristics. However, for larger graphs,
+it will be more useful to generate a graph with some pre-planned best path.
+
+\subsubsection{Small random graphs}
+
+Generating these will be simple: we shall populate the matrix
+\py{Graph.dists} with random positive integers. Then we will
+compute the best TSP path.
+
+\todo{metric (perhaps same as euclidean? but there has to be some good
+way to do this)}
+
+In the \uu{Euclidean} case, we will instead generate randomly positioned
+cities in a plane.
+
+Since all these graphs will be small, we can get the optimal TSP solution by
+simply trying out all the permutations.
+
+\subsubsection{Larger graphs}
+
+A good way to intentionally generate an optimal path in a graph is to create
+a cycle with small weights in it and then assign larger values to all the other
+edges. So:
+\[ \forall i\in\{0,...,n-2\}\ldotp w(i,i+1)=\randint(1,5) \]
+\[ \forall i,j\in{0,...,n-1}\ldotp i\ne j \wedge j\ne i+1 \ldotp
+w(i,j) = \randint(6,10) \]
+The random number boundaries here are somewhat arbitrary, we just need to make
+sure that the cycle has smaller values.
+
+When we have this matrix, now we swap the values around, so that the initial
+permutation ([1,2,3,...,n-1]) won't already be the solution.
+
+\end{document}
