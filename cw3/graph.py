@@ -183,20 +183,17 @@ class Graph:
             ## O(n^2) (this will actually be lower than n^2, because we multiply
             ##         len(unused) * len(self.perm), the two of which sum to n)
             i, nn = min(
-                [(self.perm[i], pot_nn, self.dists[self.perm[i]][pot_nn])
+                [(i, pot_nn, self.dists[self.perm[i]][pot_nn])
                  for i in range(len(self.perm)) # because we will need the index in perm
                  for pot_nn in unused], # potential nearest neighbour
                 key=lambda x: x[2]
             )[:2]
-            print(self.perm[i], nn, end=" -> ")
             # now decide which edge to replace (on which side of i to insert the nn)
             # \> the minimal distance of the two nodes adjacent to self.perm[i] to nn
             dist_before = self.dists[nn][self.perm[(i - 1) % len(self.perm)]]
             dist_after  = self.dists[nn][self.perm[(i + 1) % len(self.perm)]]
-            print((self.perm[(i - 1) % len(self.perm)], dist_before), (self.perm[(i + 1) % len(self.perm)], dist_after), end=" -> ")
             if dist_before < dist_after:
                 self.perm.insert(i, nn)
             else:
                 self.perm.insert((i + 1) % len(self.perm), nn)
             unused.remove(nn)
-            print(nn)
