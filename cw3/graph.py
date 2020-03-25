@@ -45,8 +45,8 @@ class Graph:
 
         self.perm = list(range(self.n)) # initialize permutation, such that initially perm[i] = i
                 
-        for i in range(self.n):
-            print(self.dists[i])
+        # for i in range(self.n):
+        #     print(self.dists[i])
 
     # Complete as described in the spec, to calculate the cost of the
     # current tour (as represented by self.perm).
@@ -160,3 +160,43 @@ class Graph:
             self.perm[i+1] = minj
             unused.remove(minj)
             
+    def NearestExpand(self):
+        # find the two closest cities (arg min of edge weights) and start a tour from them
+        ## \Theta(n^2)
+        self.perm = list(
+            min(
+                [(i, j, self.dists[i][j]) # edge endpoints and its weight
+                 for i in range(self.n)
+                 for j in range(i)], # check only one direction, because it's symmetric
+                key=lambda x: x[2]
+            )[:2]
+        )
+        # generate a list of unused nodes
+        ## \Theta(n) # check membership in a list of 2, do it for n items =>
+        ##             \Theta(2n) = \Theta(n)
+        unused = [i for i in range(self.n) if i not in self.perm]
+
+        # now keep adding the nearest neighbour of some node in self.perm from unused
+        while unused:
+            # find nearest neighbour nn (arg min of edge weights over unused x self.perm)
+            # also store for which node in self.perm this nn is the nearest neighbour
+            ## O(n^2) (this will actually be lower than n^2, because we multiply
+            ##         len(unused) * len(self.perm), the two of which sum to n)
+            i, nn = min(
+                [(self.perm[i], pot_nn, self.dists[self.perm[i]][pot_nn])
+                 for i in range(len(self.perm)) # because we will need the index in perm
+                 for pot_nn in unused], # potential nearest neighbour
+                key=lambda x: x[2]
+            )[:2]
+            print(self.perm[i], nn, end=" -> ")
+            # now decide which edge to replace (on which side of i to insert the nn)
+            # \> the minimal distance of the two nodes adjacent to self.perm[i] to nn
+            dist_before = self.dists[nn][self.perm[(i - 1) % len(self.perm)]]
+            dist_after  = self.dists[nn][self.perm[(i + 1) % len(self.perm)]]
+            print((self.perm[(i - 1) % len(self.perm)], dist_before), (self.perm[(i + 1) % len(self.perm)], dist_after), end=" -> ")
+            if dist_before < dist_after:
+                self.perm.insert(i, nn)
+            else:
+                self.perm.insert((i + 1) % len(self.perm), nn)
+            unused.remove(nn)
+            print(nn)
