@@ -9,7 +9,7 @@
 
 \newcommand{\todo}[1]{\textcolor{red}{$\star$~TODO: \textbf{#1}}}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\randint}{\operatorname{randint}}
+\newcommand{\randint}{\operatorname{RANDINT}}
 
 \newcommand{\bb}[1]{\textbf{#1}}
 \newcommand{\uu}[1]{\underline{#1}}
@@ -63,11 +63,16 @@ Generating these will be simple: we shall populate the matrix
 \py{Graph.dists} with random positive integers. Then we will
 compute the best TSP path.
 
-\todo{metric (perhaps same as euclidean? but there has to be some good
-way to do this)}
-
 In the \uu{Euclidean} case, we will instead generate randomly positioned
 cities in a plane.
+
+For a general \uu{metric} case, we will generate the cities randomly embedded
+in a plane, same as in the Euclidean case. However, we will use
+the \uu{taxicab} metric (also called the \uu{Manhattan} metric), which measures
+the distance along the axes individually and sums them. In the case of discrete
+positions (which we will use):
+\[ w_M: \mathbb{N}^n \times \mathbb{N}^n \to \mathbb{N} \]
+\[ w_M\left(\left<u_1,...,u_n\right>, \left<v_1,...,v_n\right>\right) = \sum_{i=1}^n \left|u_i - v_i\right| \]
 
 Since all these graphs will be small, we can get the optimal TSP solution by
 simply trying out all the permutations.
@@ -83,7 +88,7 @@ w(i,j) = \randint(6,10) \]
 The random number boundaries here are somewhat arbitrary, we just need to make
 sure that the cycle has smaller values.
 
-When we have this matrix, now we swap the values around, so that the initial
-permutation [0,1,2,...,n-1] won't already be the solution.
+Once we have this matrix, we swap the vertices around, so that the initial
+permutation [0,1,2,...,n-1] won't immediately be the solution.
 
 \end{document}

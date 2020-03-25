@@ -177,11 +177,14 @@ class Graph:
         unused = [i for i in range(self.n) if i not in self.perm]
 
         # now keep adding the nearest neighbour of some node in self.perm from unused
+        ## \Theta(n) * O(n^2)
         while unused:
             # find nearest neighbour nn (arg min of edge weights over unused x self.perm)
             # also store for which node in self.perm this nn is the nearest neighbour
             ## O(n^2) (this will actually be lower than n^2, because we multiply
             ##         len(unused) * len(self.perm), the two of which sum to n)
+            ## \Theta(a * (n-a)) where a = len(self.perm)
+            ## \Theta(a * (n-a)) = \Theta(an - a^2) =? \Theta(n) ?
             i, nn = min(
                 [(i, pot_nn, self.dists[self.perm[i]][pot_nn])
                  for i in range(len(self.perm)) # because we will need the index in perm
