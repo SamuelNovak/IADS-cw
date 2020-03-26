@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{tabularx}
 
 \newcommand{\todo}[1]{\textcolor{red}{$\star$~TODO: \textbf{#1}}}
 \newcommand{\R}{\mathbb{R}}
@@ -21,6 +22,7 @@
 \renewcommand{\thesection}{\Alph{section}}
 \setcounter{section}{2}
 
+
 \title{IADS Coursework 3}
 \author{Samo Nov\'ak (s1865783)}
 \date{March 2020}
@@ -29,7 +31,16 @@
 
 \maketitle
 
-\section{Own Algorithm}
+\section{Algorithm: Nearest Neighbour Insertion}
+
+\todo{Name? Call it \bb{expansion}?}
+
+We draw inspiration for this algorithm from the outline of Nearest Insertion
+(and other TSP heuristics) by Nilsson\cite{nilsson}. We chose this particular
+algorithm because of its elegance - it follows a very simple principle:
+start with some trivial circuit of minimum weight and then the most suitable
+nodes to add to it, until all nodes are used.
+
 
 \section{Experiments}
 
@@ -71,8 +82,11 @@ in a plane, same as in the Euclidean case. However, we will use
 the \uu{taxicab} metric (also called the \uu{Manhattan} metric), which measures
 the distance along the axes individually and sums them. In the case of discrete
 positions (which we will use):
-\[ w_M: \mathbb{N}^n \times \mathbb{N}^n \to \mathbb{N} \]
-\[ w_M\left(\left<u_1,...,u_n\right>, \left<v_1,...,v_n\right>\right) = \sum_{i=1}^n \left|u_i - v_i\right| \]
+\begin{align*}
+  & w_M: \mathbb{N}^n \times \mathbb{N}^n \to \mathbb{N} \\
+  & w_M\left(\left<u_1,...,u_n\right>, \left<v_1,...,v_n\right>\right) = \sum_{i=1}^n \left|u_i - v_i\right|
+\end{align*}
+where $n$ is the number of dimensions of the space (in our case $n=2$).
 
 Since all these graphs will be small, we can get the optimal TSP solution by
 simply trying out all the permutations.
@@ -82,13 +96,25 @@ simply trying out all the permutations.
 A good way to intentionally generate an optimal path in a graph is to create
 a cycle with small weights in it and then assign larger values to all the other
 edges. So:
-\[ \forall i\in\{0,...,n-2\}\ldotp w(i,i+1)=\randint(1,5) \]
-\[ \forall i,j\in{0,...,n-1}\ldotp i\ne j \wedge j\ne i+1 \ldotp
-w(i,j) = \randint(6,10) \]
+\begin{align*}\forall i\in\{0,...,n-2\}\ldotp w(i,i+1) & =\randint(1,5)\\
+  \forall i,j\in{0,...,n-1}\ldotp i\ne j \wedge j\ne i+1 \ldotp
+  w(i,j) & = \randint(6,10) \\
+\end{align*}
 The random number boundaries here are somewhat arbitrary, we just need to make
 sure that the cycle has smaller values.
 
 Once we have this matrix, we swap the vertices around, so that the initial
-permutation [0,1,2,...,n-1] won't immediately be the solution.
+permutation $[0,1,...,n-1]$ won't immediately be the solution.
+
+
+\bibliographystyle{abbrv}
+\begin{thebibliography}{9}
+\bibitem{nilsson}
+  Christian Nilsson,
+  \textit{Heuristics for the Traveling Salesman Problem},
+  Link\"oping University,
+  2003.
+  Accessible online [27-03-2020]: \url{https://pdfs.semanticscholar.org/7b80/bfc1c5dd4e10ec807c6f56d0f31f8bf86bc6.pdf}
+\end{thebibliography}
 
 \end{document}
