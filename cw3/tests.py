@@ -5,6 +5,9 @@ import enum
 from random import randint
 from itertools import permutations
 
+# TODO
+from sympy import Matrix, pprint
+
 SMALL_THRESHOLD = 10
 
 # GRAPH_TYPES = enum.Enum([
@@ -47,11 +50,26 @@ def load_graph(euclidean:bool, par):
                 g.dists[i][j] = g.dists[j][i] = graph.euclid(par[i], par[j])
     else:
         # deep copy, just in case
-        g.dists = [[par[i][j] for j in range(g.n)] for i in range(n)]
+        g.dists = [[par[i][j] for j in range(g.n)] for i in range(g.n)]
     g.perm = list(range(g.n))
     return g
         
-    
+def small_optimal_perm(g:graph.Graph):
+    """
+    Compute the optimal circuit in a small graph by enumeration.
+
+    Return a tuple of (optimal weight, optimal permutation)
+    """
+    return min([
+        (
+            sum([
+                g.dists [p[i]] [p[(i+1) % g.n]]
+                for i in range(g.n)]),
+            p
+        )
+        for p in permutations(g.perm)])
+
+
 
 def gen_small_general(n, min_distance=1, max_distance=10):
     """
@@ -63,9 +81,12 @@ def gen_small_general(n, min_distance=1, max_distance=10):
         for j in range(i):
             dists[i][j] = randint(min_distance, max_distance)
             dists[j][i] = dists[i][j]
-    for ln in dists:
-        print(ln)
-    return dists
+
+    g = load_graph(False, dists)
+    opt_weight, opt_perm = small_optimal_perm(g)
+    pprint(Matrix(dists))
+    return dists, opt_weight, opt_perm, g
+
     
 def gen_small_metric(n):
     """
@@ -75,9 +96,12 @@ def gen_small_metric(n):
     nodes = gen_small_euclidean(n, 10, 10)
     dists = [[abs(nodes[i][0] - nodes[j][0]) + abs(nodes[i][1] - nodes[j][1])
               for j in range(n)] for i in range(n)]
-    for ln in dists:
-        print(ln)
-    return dists
+
+    g = load_graph(False, dists)
+    opt_weight, opt_perm = small_optimal_perm(g)
+    pprint(Matrix(dists))
+    return dists, opt_weight, opt_perm, g
+
 
 def gen_small_euclidean(n, width=100, height=100):
     """
@@ -93,18 +117,11 @@ def gen_small_euclidean(n, width=100, height=100):
 
     # now brute-force the optimal path
     g = load_graph(True, nodes)
-    opt_weight, opt_perm = min([
-        (
-            sum([
-                g.dists [p[i]] [p[(i+1) % n]]
-                for i in range(n)]),
-            p
-        )
-        for p in permutations(g.perm)])
-
-    for ln in g.dists:
-        print(ln)    
+    opt_weight, opt_perm = small_optimal_perm(g)
+    
+    pprint(Matrix(dists))
     return nodes, opt_weight, opt_perm, g
+
 
 def gen_big_general(n, min_distance=1, max_distance=10, low_cycle_threshold=5):
     """
@@ -117,6 +134,10 @@ def gen_big_general(n, min_distance=1, max_distance=10, low_cycle_threshold=5):
             dists[i][i+1] = dists[i+1][i] = randint(min_distance, low_cycle_threshold)
         for j in range(i+2, n):
             dists[i][j] = dists[j][i] = randint(low_cycle_threshold + 1, max_distance)
-    for ln in dists:
-        print(ln)
-    return dists
+    pprint(Matrix(dists))
+    opt_weight = sum([dists[i][(i+1) % n] for i in range(n)])
+
+    # now reorder nodes
+    edges = [(i,j, dists[i][j]) for i in range(n) for j in range(i)]
+    
+    return dists, opt_weight
