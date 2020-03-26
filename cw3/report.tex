@@ -7,10 +7,13 @@
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{tabularx}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 \newcommand{\todo}[1]{\textcolor{red}{$\star$~TODO: \textbf{#1}}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\randint}{\operatorname{RANDINT}}
+% \newcommand{\argmin}[1]{\operatorname{argmin}\limits_{#1}}
+\DeclareMathOperator*{\argmin}{argmin}
 
 \newcommand{\bb}[1]{\textbf{#1}}
 \newcommand{\uu}[1]{\underline{#1}}
@@ -21,6 +24,7 @@
 
 \renewcommand{\thesection}{\Alph{section}}
 \setcounter{section}{2}
+% \renewcommand{\thealgocf}{}
 
 
 \title{IADS Coursework 3}
@@ -38,9 +42,37 @@
 We draw inspiration for this algorithm from the outline of Nearest Insertion
 (and other TSP heuristics) by Nilsson\cite{nilsson}. We chose this particular
 algorithm because of its elegance - it follows a very simple principle:
-start with some trivial circuit of minimum weight and then the most suitable
-nodes to add to it, until all nodes are used.
+start with some trivial circuit of minimum weight and then find the most suitable
+nodes to add to it, until all nodes are used. The pseudocode for this algorithm is
+presented below, as is some more discussion and visual explanation. In the program
+submitted, this is \py{Graph.NearestExpand()}.
 
+\begin{algorithm}[H]
+  \KwIn{a weight function $w:V\times V \to \mathbb{R}^{+}$}
+  \KwResult{a permutation $\pi$ (represented as list) of
+    all vertices representing a circuit}
+
+  Initialize: $\pi \gets \operatorname{convert\,tuple\,to\,list}[
+  \argmin_{(i,j)\in E} w(i,j)] \nllabel{init-pi}$\;
+  Initialize: $U = \{ x\in V | x \notin \pi \}$ \nllabel{init-unused}
+  \tcc*{set of unused nodes}
+  \While{$U \ne \varnothing$}{
+    $(i, u)\gets \argmin_{(i,v):\;i\in\{0,...,|\pi|-1\},\;v\in U}
+    \left\{w\left(\pi[i], v\right)\right\}$ \nllabel{argmin-iu} \;
+    $d_{-} \gets w\left( u, \pi\left[(i-1) \mod |\pi|\right] \right)$
+    \nllabel{dminus} \;
+    $d_{+} \gets w\left( u, \pi\left[(i+1) \mod |\pi|\right] \right)$
+    \nllabel{dplus} \;
+    \eIf{$d_{-} < d_{+}$ \nllabel{choose-insertion-point}}{
+      Insert $u$ into $\pi$ at (before) position $i$\;
+    }{
+      Insert $u$ into $\pi$ after position $i$, so at
+      position $(i+1)\mod|\pi|$\;
+    }
+    Remove $u$ from $U$.
+  }
+  \caption{Nearest Insert}
+\end{algorithm}
 
 \section{Experiments}
 
@@ -53,7 +85,7 @@ Greedy, \todo{own}) performs.
 Firstly, let us summarize the assumptions and setting of the problem:
 \begin{itemize}
 \item We have an \uu{undirected}, \uu{complete} graph $G=(V,E)$ where $|V|=n$.
-\item We have a weight function $w:E\to\R^{+}$, such that
+\item We have a weight function $w:V\times V\to\R^{+}$, such that
   $\forall i,j\in V \ldotp w(i,j) = w(j,i)$, which will be represented as
   a \uu{symmetric} matrix \py{Graph.dists[i][j]}\,$= w(i,j)$).
   We assume $\forall i\in V\ldotp w(i,i)=0$.
@@ -83,10 +115,11 @@ the \uu{taxicab} metric (also called the \uu{Manhattan} metric), which measures
 the distance along the axes individually and sums them. In the case of discrete
 positions (which we will use):
 \begin{align*}
-  & w_M: \mathbb{N}^n \times \mathbb{N}^n \to \mathbb{N} \\
-  & w_M\left(\left<u_1,...,u_n\right>, \left<v_1,...,v_n\right>\right) = \sum_{i=1}^n \left|u_i - v_i\right|
+  & w_M: \mathbb{N}^d \times \mathbb{N}^d \to \mathbb{N} \\
+  & w_M\left(\left<u_1,...,u_d\right>, \left<v_1,...,v_d\right>\right) = \sum_{i=1}^d \left|u_i - v_i\right|
 \end{align*}
-where $n$ is the number of dimensions of the space (in our case $n=2$).
+where $d$ is the number of dimensions of the space (in our case $d=2$
+\todo{more dimensions??}).
 
 Since all these graphs will be small, we can get the optimal TSP solution by
 simply trying out all the permutations.
