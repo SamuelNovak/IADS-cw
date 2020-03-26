@@ -29,7 +29,7 @@ class Graph:
             self.n = len(lines)
             self.dists = [[0 for j in range(self.n)] for i in range(self.n)] # allocate table space
             for i in range(self.n):
-                for j in range(i, self.n):
+                for j in range(i, self.n): # TODO optimize, range from i+1, no need for if
                     if i == j:
                         self.dists[i][j] = 0
                     else:
