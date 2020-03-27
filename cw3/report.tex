@@ -15,6 +15,7 @@
 \newcommand{\randint}{\operatorname{RANDINT}}
 % \newcommand{\argmin}[1]{\operatorname{argmin}\limits_{#1}}
 \DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\qed}{\begin{flushright}$\bowtie$\end{flushright}}
 
 \newcommand{\bb}[1]{\textbf{#1}}
 \newcommand{\uu}[1]{\underline{#1}}
@@ -23,7 +24,7 @@
 \newenvironment{pyc}{\begin{lstlisting}[language=Python]}{\end{lstlisting}}
 \newcommand{\py}[1]{\lstinline[language=Python]{#1}}
 
-\newcommand{\vertex}[1]{\filldraw [black] (#1) circle (1.5mm);}
+\newcommand{\vertex}[1]{\filldraw [black] (#1) circle (1.5mm)}
 
 \renewcommand{\thesection}{\Alph{section}}
 \setcounter{section}{2}
@@ -82,7 +83,7 @@ submitted, this is \py{Graph.NearestExpand()}.
       position $(i+1)\mod|\pi|$
       \tcc*{$\Theta(n)$}
     }
-    Remove $u$ from $U$. \tcc*{$O(n)$ (impl. dep.)}
+    Remove $u$ from $U$. \tcc*{$O(|U|)$ (impl. dep.)}
   }
   \KwRet{$\pi$}\;
   \caption{Nearest Insert}
@@ -113,9 +114,12 @@ to insert the same node multiple times. We also like our algorithms to terminate
 
 The running time of this algorithm is $\Theta(n^2)$, where $n=|V|$. This comes
 from the fact that the most significant contributions are done by the $\Theta(n^2)$
-terms. The running time of lines \ref*{init-pi}, \ref*{init-unused}, \ref*{argmin-iu}
-will be elaborated on in the Appendix~\ref{appendix:runtime-ni}, in the interest of
-preserving clarity in this section.
+terms. Insertions take $\Theta(n)$ time, due to array representation of the list $\pi$.
+If we implement $U$ also as a list (as is done in the program), removal from it
+will be $\Theta(|U|)$ (this will start of as $\Theta(n)$ and decrease). The running
+time of lines~\ref*{init-pi}, \ref*{init-unused}, \ref*{argmin-iu} will be elaborated
+in the Appendix~\ref{appendix:runtime-ni}, in the interest of preserving clarity
+in this section.
 
 Below is a simple visualisation of the described algorithm. We have used a 2-D
 Euclidean graph for the visualisation, because it will be easy to see distances
@@ -131,18 +135,10 @@ intuitively.
     \vertex{4,3};
 
     \draw[dashed] (3,1) -- (4,1);
-  \end{tikzpicture}
-  \hspace{1.5cm}
-  \begin{tikzpicture}[scale=.5,auto=left]
-    \vertex{1,3};
-    \vertex{3,1};
-    \vertex{3,5};
-    \vertex{4,1};
-    \vertex{4,3};
 
-    \draw (3,1) -- (4,1);
+    \node (3,-1) {(a)};
   \end{tikzpicture}
-  \hspace{1.5cm}
+  \hspace{2cm}
   \begin{tikzpicture}[scale=.5,auto=left]
     \vertex{1,3};
     \vertex{3,1};
@@ -154,8 +150,10 @@ intuitively.
     \draw[dashed] (4,1) -- (4,3);
     \draw[dotted] (4,3) .. controls (3,2) and (3,2) .. (3,1);
     \draw[dotted] (4,3) .. controls (3.5,1.5) and (3.5,1.5) .. (3,1);
+
+    \node (3,-1) {(b)};
   \end{tikzpicture}
-  \hspace{1.5cm}
+  \hspace{2cm}
   \begin{tikzpicture}[scale=.5,auto=left]
     \vertex{1,3};
     \vertex{3,1};
@@ -167,11 +165,45 @@ intuitively.
     \draw[dashed] (4,3) -- (3,5);
     \draw[dotted] (3,5) -- (3,1);
     \draw[dotted] (3,5) -- (4,1);
+    
+    \node (3,-1) {(c)};
   \end{tikzpicture}
-  \caption{aaa}
+  \\
+  \begin{tikzpicture}[scale=.5,auto=left]
+    \vertex{1,3};
+    \vertex{3,1};
+    \vertex{3,5};
+    \vertex{4,1};
+    \vertex{4,3};
+
+    \draw (3,1) -- (4,1) -- (4,3) -- (3,5) -- (3,1);
+    \draw[dashed] (1,3) -- (3,1);
+    \draw[dotted] (1,3) -- (3,5);
+    \draw[dotted] (1,3) -- (4,1);
+    
+    \node (3,-1) {(d)};
+  \end{tikzpicture}
+  \hspace{2cm}
+  \begin{tikzpicture}[scale=.5,auto=left]
+    \vertex{1,3};
+    \vertex{3,1};
+    \vertex{3,5};
+    \vertex{4,1};
+    \vertex{4,3};
+
+    \draw (1,3) -- (3,1) -- (4,1) -- (4,3) -- (3,5) -- (1,3);
+    
+    \node (3,-1) {(e)};
+  \end{tikzpicture}
 \end{figure}
 
+In these diagrams, \ii{full} lines represent the current permutation $\pi$,
+\ii{dashed}~lines represent the edge that will be definitely added into $\pi$ next
+(line \ref*{init-pi} in initialization, line \ref*{argmin-iu} in loop),
+and \ii{dotted}~lines represent the other two nodes that are being condidered
+(lines \ref*{dminus}, \ref*{dplus}).
 
+\todo{Elaborate? Treba vobec?}
 
 \section{Experiments}
 
@@ -240,9 +272,74 @@ permutation $[0,1,...,n-1]$ won't immediately be the solution.
 
 
 \appendix
-\renewcommand{\thesection}{$\Omega$\roman{section}}
+\section*{APPENDIX}
+% \renewcommand{\thesection}{$\Omega$\roman{section}}
+\renewcommand{\thesection}{\roman{section}}
 \section{Running time of Nearest Insert}
 \label{appendix:runtime-ni}
+
+This section concerns the running time of algorithm \todo{name}.
+
+\subsection{$\argmin$ on line \ref*{init-pi}}
+
+By the concrete properties of our weight functions $w:V\times V\to\mathbb{R}^{+}$
+(symmetry and $\forall u\in V\ldotp w(u,u)=0$):
+\[ \argmin_{(i,j)\in E} w(i,j) = \argmin_{\substack{(i,j)\in V\times V\\j<i}} w(i,j) \]
+So the running time, which depends on the number of lookups (where a lookup of $w(i,j)$
+is $\Theta(1)$, because we represent $w$ as a matrix):
+\[ \sum_{i=0}^{n-1} \sum_{j=0}^{i-1} \Theta(1) = \Theta(1) \sum_{i=0}^{n-1} i
+  = \Theta(1) \cdot \frac{(n-1)(n-1+1)}{2} = \Theta(n^2) \]
+\qed
+
+\subsection{Unused nodes set on line \ref*{init-unused}}
+
+Here we iterate over $n$ nodes and check their membership in a list of 2. This means
+running time $\Theta(2n) = \Theta(n)$. \qed
+
+\subsection{$\argmin$ on line \ref*{argmin-iu}}
+
+In each iteration of the \bb{while} loop let $k$ be the number of iteration,
+starting at $k=0$ just after initialization. Let $\pi_k$ and $U_k$ be the permutation,
+and unused nodes set, respectively, after $k^{\mathrm{th}}$ iteration.
+Then $|\pi_k| = |\pi_0|+k = k+2$, since at every iteration we
+add one node to $\pi$, and we start off with two nodes ($|\pi_0|=2$). In all iterations,
+$\pi_k\cup U_k=V$ and $\pi_k\cap U_k=\varnothing$, so $|U_k|=n-|\pi_k|$. A lookup takes
+$\Theta(1)$ time. Then running time of $\argmin_{(i,v):\;i\in\{0,...,|\pi|-1\},\;v\in U}
+\left\{w\left(\pi[i], v\right)\right\}$ is, in every iteration:
+
+\begin{align*}
+  \Theta(|\pi_k||U_k|) & = \Theta\left[ (k+2)(n-(k+2)) \right] \\
+                       & = \Theta\left[ (k+2)(n-k-2) \right] \\
+                       & = \Theta(kn - k^2 - 2k + 2n - 2k - 4) \\
+                       & = \Theta(2n + kn - k^2 - 4k - 4) \\
+                       & = \Theta(n + kn - k^2 - k)
+\end{align*}
+
+Our $k$ will range over $\{0,...,n-2\}$. If $k=0$ (\bb{base case}):
+\begin{align*}
+  \Theta(|\pi_0||U_0|) & = \Theta(n + kn - k^2 - k) \\
+                       & = \Theta(n + 0 - 0 - 0)
+\end{align*}
+\begin{equation}
+  \label{base-case}
+  \therefore \Theta(|\pi_0||U_0|) = \Theta(n)
+\end{equation}
+
+Now show that if for arbirary $k\in\{0,...,n-3\}$ it is true thaty
+$\Theta(|\pi_k||U_k|) = \Theta(n + kn - k^2 - k) = \Theta(n)$ then for
+$k+1$ it holds too.
+
+\begin{align*}
+  \Theta(|\pi_{k+1}||U_{k+1}|) & = \Theta(n + (k+1)n - (k+1)^2 - (k+1)) \\
+                               & = \Theta(n + kn + n - k^2 - 2k - 1 -k -1) \\
+                               & = \Theta(2n + kn - k^2 - 3k - 2) \\
+                               & = \Theta(n + kn - k^2 - k) \\
+                               & = \Theta(|\pi_k||U_k|) \\
+\end{align*}
+And now by induction from (\ref*{base-case}), we get that:
+\[ \therefore \forall k\in\{0,...,n-2\}\ldotp
+  \Theta(|\pi_k||U_k|) = \Theta(n)\]
+\qed
 
 
 \bibliographystyle{abbrv}
