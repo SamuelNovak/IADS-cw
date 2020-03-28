@@ -85,7 +85,7 @@ def gen_small_general(n, min_distance=1, max_distance=10):
     g = load_graph(False, dists)
     opt_weight, opt_perm = small_optimal_perm(g)
     pprint(Matrix(dists))
-    return dists, opt_weight, opt_perm, g
+    return g, opt_weight, opt_perm
 
     
 def gen_small_metric(n):
@@ -93,14 +93,14 @@ def gen_small_metric(n):
     Generates a metric graph of size n (nodes) by placing cities randomly
     on a plane and taking the Manhattan distance.
     """
-    nodes = gen_small_euclidean(n, 10, 10)
+    _, nodes, _, _ = gen_small_euclidean(n, 10, 10)
     dists = [[abs(nodes[i][0] - nodes[j][0]) + abs(nodes[i][1] - nodes[j][1])
               for j in range(n)] for i in range(n)]
 
     g = load_graph(False, dists)
     opt_weight, opt_perm = small_optimal_perm(g)
     pprint(Matrix(dists))
-    return dists, opt_weight, opt_perm, g
+    return g, opt_weight, opt_perm
 
 
 def gen_small_euclidean(n, width=100, height=100):
@@ -119,9 +119,23 @@ def gen_small_euclidean(n, width=100, height=100):
     g = load_graph(True, nodes)
     opt_weight, opt_perm = small_optimal_perm(g)
     
-    pprint(Matrix(dists))
-    return nodes, opt_weight, opt_perm, g
+    pprint(Matrix(g.dists))
+    return g, nodes, opt_weight, opt_perm
 
+
+def random_isomorphic_graph(dists):
+    n = len(dists)
+    ret = [[0 for f in range(n)] for i in range(n)]
+    # generate a random permutation
+    unused = list(range(n))
+    p = []
+    while unused:
+        p.append(unused.pop(randint(0, len(unused) - 1)))
+    for i in range(n):
+        for j in range(i):
+            ret[p[i]][p[j]] = ret[p[j]][p[i]] = dists[i][j]
+    print(p)
+    return ret
 
 def gen_big_general(n, min_distance=1, max_distance=10, low_cycle_threshold=5):
     """
@@ -134,10 +148,46 @@ def gen_big_general(n, min_distance=1, max_distance=10, low_cycle_threshold=5):
             dists[i][i+1] = dists[i+1][i] = randint(min_distance, low_cycle_threshold)
         for j in range(i+2, n):
             dists[i][j] = dists[j][i] = randint(low_cycle_threshold + 1, max_distance)
-    pprint(Matrix(dists))
+    # pprint(Matrix(dists))
     opt_weight = sum([dists[i][(i+1) % n] for i in range(n)])
 
-    # now reorder nodes
-    edges = [(i,j, dists[i][j]) for i in range(n) for j in range(i)]
+    # now reorder nodes (so the matrix is different, but the new graph is isomorphic)
+    dists = random_isomorphic_graph(dists)
+    # pprint(Matrix(dists))
     
-    return dists, opt_weight
+    return load_graph(False, dists), opt_weight
+
+def gen_big_metric(n):
+    """
+    Generates a big metric graph by creating a cicle (w.r.t. Manhattan metric).
+    Can be also used to generate a Euclidean graph (so returns the points too).
+    """
+    R = n//2
+    nodes = [(R + x, R + R - abs(x)) for x in range(-n//2, n//2, 2)] \
+            + [(R + x, R - R + abs(x)) for x in range(n//2,
+                                                      -n//2 + 1 - (1 if n % 2 == 0 else 0),
+                                                      -2)]
+
+    dists = [[abs(nodes[i][0] - nodes[j][0]) + abs(nodes[i][1] - nodes[j][1])
+              for j in range(n)] for i in range(n)]
+
+    pprint(Matrix(dists))
+    opt_weight = sum([dists[i][j%n] for i,j in zip(range(n), range(1,n+1))])
+
+    dists = random_isomorphic_graph(dists)
+    
+    return load_graph(False, dists), nodes, opt_weight
+
+def gen_big_euclidean(n):
+    """
+    Generates a big euclidean graph, using gen_big_metric to generate the nodes.
+    """
+    _, nodes, _ = gen_big_metric(n)
+    opt_weight = sum([graph.euclid(i, j) for i,j in zip(nodes, nodes[1:] + [nodes[0]])])
+
+    rnodes = []
+    while nodes:
+        rnodes.append(nodes.pop(randint(0, len(nodes) - 1)))
+        
+    return load_graph(True, rnodes), opt_weight
+

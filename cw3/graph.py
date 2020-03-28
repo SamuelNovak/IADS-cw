@@ -27,15 +27,12 @@ class Graph:
             
         if n == -1: # Euclidean case
             self.n = len(lines)
-            self.dists = [[0 for j in range(self.n)] for i in range(self.n)] # allocate table space
+            # allocate table space
+            self.dists = [[0 for j in range(self.n)] for i in range(self.n)]
             for i in range(self.n):
-                for j in range(i, self.n): # TODO optimize, range from i+1, no need for if
-                    if i == j:
-                        self.dists[i][j] = 0
-                    else:
-                        self.dists[i][j] = euclid(lines[i], lines[j])
-                        self.dists[j][i] = self.dists[i][j]
-                        
+                for j in range(i+1, self.n):
+                    self.dists[i][j] = self.dists[j][i] = euclid(lines[i], lines[j])
+
         else: # General case
             self.n = n
             self.dists = [[0 for j in range(self.n)] for i in range(self.n)] # allocate table space

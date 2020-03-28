@@ -249,15 +249,15 @@ positions (which we will use):
   & w_M: \mathbb{N}^d \times \mathbb{N}^d \to \mathbb{N} \\
   & w_M\left(\left<u_1,...,u_d\right>, \left<v_1,...,v_d\right>\right) = \sum_{i=1}^d \left|u_i - v_i\right|
 \end{align*}
-where $d$ is the number of dimensions of the space (in our case $d=2$
-\todo{more dimensions??}).
+where $d$ is the number of dimensions of the space (we may use arbitrary
+$d\in\mathbb{Z}^{+}$).
 
 Since all these graphs will be small, we can get the optimal TSP solution by
 simply trying out all the permutations.
 
 \subsubsection{Larger graphs}
 
-A good way to intentionally generate an optimal path in a graph is to create
+A good way to intentionally generate an optimal path in a (general) graph is to create
 a cycle with small weights in it and then assign larger values to all the other
 edges. So:
 \begin{align*}\forall i\in\{0,...,n-2\}\ldotp w(i,i+1) & =\randint(1,5)\\
@@ -265,10 +265,23 @@ edges. So:
   w(i,j) & = \randint(6,10) \\
 \end{align*}
 The random number boundaries here are somewhat arbitrary, we just need to make
-sure that the cycle has smaller values.
+sure that the cycle has smaller values. In the code, the threshold between these
+(here 5) is the argument \py{low_cycle_threshold}.
 
 Once we have this matrix, we swap the vertices around, so that the initial
-permutation $[0,1,...,n-1]$ won't immediately be the solution.
+permutation $[0,1,...,n-1]$ won't immediately be the solution. We do this by
+generating a graph that is \uu{isomorphic} to the original one. For graph isomorphism,
+we need a \ii{bijection} between the vertices of the old one and the new one. We
+generate a permutation $p:V\to V$ to be this bijection and then create a corresponding
+new weight function $w^\star:V\times V \to \mathbb{R}^{+}$:
+\[ \forall i,j\in V \ldotp
+  w^\star\left( p(i), p(j) \right)
+  = w(i,j) \]
+
+For metric (and Euclidean, which are also metric) graphs, we generate a circle w.r.t.
+the particular metric we are using, and then reorder the nodes similarly.
+
+\subsection{Results}
 
 
 \appendix
