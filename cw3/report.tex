@@ -283,6 +283,40 @@ the particular metric we are using, and then reorder the nodes similarly.
 
 \subsection{Results}
 
+\begin{tabular}{|c c|r r r r r|}
+  \hline Type & $n$ & \shortstack{ Swap \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ TwoOpt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Swap, TwoOpt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Greedy \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ NearestInsert \\ vs. $W_0$ \\ vs. $W_i$ } \\ 
+  \hline\hline
+  G & 5 & \shortstack{ 1.003 \\ 0.748 } & \shortstack{ 1.004 \\ 0.748 } & \shortstack{ 1.003 \\ 0.748 } & \shortstack{ 1.053 \\ 0.784 } & \shortstack{ 1.158 \\ 0.856 } \\ 
+  \hline
+  G & 7 & \shortstack{ 1.23 \\ 0.703 } & \shortstack{ 1.027 \\ 0.596 } & \shortstack{ 1.026 \\ 0.595 } & \shortstack{ 1.113 \\ 0.648 } & \shortstack{ 1.261 \\ 0.726 } \\ 
+  \hline
+  G & 10 & \shortstack{ 1.545 \\ 0.775 } & \shortstack{ 1.011 \\ 0.513 } & \shortstack{ 1.014 \\ 0.515 } & \shortstack{ 1.074 \\ 0.545 } & \shortstack{ 1.361 \\ 0.685 } \\ 
+  \hline
+  G & 20 & \shortstack{ 1.929 \\ 0.845 } & \shortstack{ 1.036 \\ 0.458 } & \shortstack{ 1.036 \\ 0.458 } & \shortstack{ 1.058 \\ 0.467 } & \shortstack{ 1.498 \\ 0.659 } \\ 
+  \hline
+  G & 50 & \shortstack{ 2.226 \\ 0.876 } & \shortstack{ 1.066 \\ 0.422 } & \shortstack{ 1.064 \\ 0.421 } & \shortstack{ 1.04 \\ 0.411 } & \shortstack{ 1.612 \\ 0.636 } \\ 
+  \hline\hline
+  M & 5 & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.046 \\ 0.873 } & \shortstack{ 1.052 \\ 0.874 } \\ 
+  \hline
+  M & 7 & \shortstack{ 1.164 \\ 0.762 } & \shortstack{ 1.008 \\ 0.665 } & \shortstack{ 1.008 \\ 0.664 } & \shortstack{ 1.087 \\ 0.717 } & \shortstack{ 1.146 \\ 0.753 } \\ 
+  \hline
+  M & 10 & \shortstack{ 1.606 \\ 0.796 } & \shortstack{ 1.018 \\ 0.507 } & \shortstack{ 1.091 \\ 0.543 } & \shortstack{ 1.174 \\ 0.584 } & \shortstack{ 1.556 \\ 0.774 } \\ 
+  \hline
+  M & 20 & \shortstack{ 2.679 \\ 0.774 } & \shortstack{ 1.012 \\ 0.293 } & \shortstack{ 1.033 \\ 0.299 } & \shortstack{ 1.342 \\ 0.39 } & \shortstack{ 1.725 \\ 0.5 } \\ 
+  \hline
+  M & 50 & \shortstack{ 6.556 \\ 0.755 } & \shortstack{ 1.005 \\ 0.116 } & \shortstack{ 1.017 \\ 0.117 } & \shortstack{ 1.206 \\ 0.139 } & \shortstack{ 1.925 \\ 0.222 } \\ 
+  \hline\hline
+  E & 5 & \shortstack{ 1.001 \\ 0.827 } & \shortstack{ 1.001 \\ 0.826 } & \shortstack{ 1.001 \\ 0.827 } & \shortstack{ 1.047 \\ 0.865 } & \shortstack{ 1.066 \\ 0.881 } \\ 
+  \hline
+  E & 7 & \shortstack{ 1.132 \\ 0.801 } & \shortstack{ 1.002 \\ 0.714 } & \shortstack{ 1.004 \\ 0.715 } & \shortstack{ 1.07 \\ 0.763 } & \shortstack{ 1.16 \\ 0.826 } \\ 
+  \hline
+  E & 10 & \shortstack{ 1.69 \\ 0.779 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.623 \\ 0.753 } \\ 
+  \hline
+  E & 20 & \shortstack{ 2.933 \\ 0.75 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.794 \\ 0.461 } \\ 
+  \hline
+  E & 50 & \shortstack{ 7.139 \\ 0.757 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.928 \\ 0.205 } \\ 
+  \hline
+\end{tabular}
 
 \appendix
 \section*{APPENDIX}

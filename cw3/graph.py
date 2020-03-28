@@ -148,7 +148,7 @@ class Graph:
             self.perm[i+1] = minj
             unused.remove(minj)
             
-    def NearestExpand(self):
+    def NearestInsert(self):
         # find the two closest cities (arg min of edge weights) and start a tour from them
         ## \Theta(n^2)
         self.perm = list(
