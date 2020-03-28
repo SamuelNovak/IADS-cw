@@ -41,10 +41,8 @@ class Graph:
                 self.dists[j][i] = w
 
         self.perm = list(range(self.n)) # initialize permutation, such that initially perm[i] = i
-                
-        # for i in range(self.n):
-        #     print(self.dists[i])
 
+        
     # Complete as described in the spec, to calculate the cost of the
     # current tour (as represented by self.perm).
     def tourValue(self):
@@ -73,7 +71,6 @@ class Graph:
             + self.dists[self.perm[i]][self.perm[(i+2) % self.n]]
 
         if new < original: # swap is better, perform it
-            # DEBUG # print("Swap at {i} ({a}, {b}, {c}, {d}) -> ({a}, {c}, {b}, {d}): (O,N) = ({o}, {n})".format(i=i, a=self.perm[(i-1)%self.n], b=self.perm[i], c=self.perm[(i+1)%self.n], d=self.perm[(i+2)%self.n], o=original, n=new))
             i_original = self.perm[i]
             self.perm[i] = self.perm[(i+1) % self.n]
             self.perm[(i+1) % self.n] = i_original
@@ -105,13 +102,7 @@ class Graph:
                 x = self.perm[i + k]
                 perm[i + k] = self.perm[j - k]
                 perm[j - k] = x
-            # perm = list(self.perm)
-            # self.perm[i:j+1] = self.perm[i:j+1][::-1]
 
-            print("Reversing from", i, "to", j)
-            for k in range(self.n):
-                print(k, self.perm[k], "+" if i <= k <= j else "=", perm[k], k,
-                      sep="\t\t")
             self.perm = perm[:]
             return True
         else:
