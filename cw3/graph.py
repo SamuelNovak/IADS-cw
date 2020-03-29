@@ -31,7 +31,8 @@ class Graph:
             self.dists = [[0 for j in range(self.n)] for i in range(self.n)]
             for i in range(self.n):
                 for j in range(i+1, self.n):
-                    self.dists[i][j] = self.dists[j][i] = euclid(lines[i], lines[j])
+                    self.dists[i][j] = euclid(lines[i], lines[j])
+                    self.dists[j][i] = self.dists[i][j]
 
         else: # General case
             self.n = n
@@ -160,19 +161,15 @@ class Graph:
             )[:2]
         )
         # generate a list of unused nodes
-        ## \Theta(n) # check membership in a list of 2, do it for n items =>
-        ##             \Theta(2n) = \Theta(n)
+        ## \Theta(n)
         unused = [i for i in range(self.n) if i not in self.perm]
 
         # now keep adding the nearest neighbour of some node in self.perm from unused
-        ## \Theta(n) * O(n^2)
+        ## \Theta(n) * \Theta(n)
         while unused:
             # find nearest neighbour nn (arg min of edge weights over unused x self.perm)
             # also store for which node in self.perm this nn is the nearest neighbour
-            ## O(n^2) (this will actually be lower than n^2, because we multiply
-            ##         len(unused) * len(self.perm), the two of which sum to n)
-            ## \Theta(a * (n-a)) where a = len(self.perm)
-            ## \Theta(a * (n-a)) = \Theta(an - a^2) =? \Theta(n) ?
+            ## \Theta(n)
             i, nn = min(
                 [(i, pot_nn, self.dists[self.perm[i]][pot_nn])
                  for i in range(len(self.perm)) # because we will need the index in perm

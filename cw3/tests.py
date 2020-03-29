@@ -5,30 +5,7 @@ import enum
 from random import randint
 from itertools import permutations
 
-# TODO
-from sympy import Matrix, pprint
-
 SMALL_THRESHOLD = 10
-
-# GRAPH_TYPES = enum.Enum([
-#     "GENERAL",
-#     "METRIC",
-#     "EUCLIDEAN"
-# ])
-
-# def generate_test(n:int, typ:GRAPH_TYPES, **kwargs):
-#     """ Generate a test graph with n nodes."""
-#     if n <= 5: # small graph (see paper)
-#         if typ == GRAPH_TYPES.GENERAL:
-#             return gen_small_general(n)
-#         elif typ == GRAPH_TYPES.METRIC:
-#             return gen_small_metric(n)
-#         elif typ == GRAPH_TYPES.EUCLIDEAN:
-#             return gen_small_euclidean(n, **kwargs)
-#         else:
-#             raise Exception("Invalid graph type requested.")
-#     else:
-#         return gen_big(n, typ)
 
 def load_graph(euclidean:bool, par):
     """
@@ -300,6 +277,8 @@ def test_all():
         rows.append(avg_rows(run_multiple_tests(typ, 100, 10, 10)))
         rows.append(avg_rows(run_multiple_tests(typ, 100, 20, 20)))
         rows.append(avg_rows(run_multiple_tests(typ, 100, 50, 50)))
+        rows.append(avg_rows(run_multiple_tests(typ, 100, 100, 100)))
+        rows.append(avg_rows(run_multiple_tests(typ, 100, 200, 200)))
 
     # remove W_0, W_i columns in this case (because their avg make no sense)
     rows = map(lambda x: x[:2] + x[4:], rows)

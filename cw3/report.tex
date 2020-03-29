@@ -37,11 +37,13 @@
 
 \begin{document}
 
-\maketitle
+\begin{tabular}{p{0.2\textwidth} p{0.4\textwidth} p{0.2\textwidth}}
+  \shortstack{Samo Nov\'ak \\ (s1865783)}
+  & {\LARGE IADS Coursework 3}
+  & March 2020
+\end{tabular}
 
 \section{Algorithm: Nearest Neighbour Insertion}
-
-\todo{Name? Call it \bb{expansion}?}
 
 We draw inspiration for this algorithm from the outline of Nearest Insertion
 (and other TSP heuristics) by Nilsson\cite{nilsson}. We chose this particular
@@ -83,40 +85,35 @@ submitted, this is \py{Graph.NearestExpand()}.
       position $(i+1)\mod|\pi|$
       \tcc*{$\Theta(n)$}
     }
-    Remove $u$ from $U$. \tcc*{$O(|U|)$ (impl. dep.)}
+    Remove $u$ from $U$. \tcc*{$\Theta(|U|)$}
   }
   \KwRet{$\pi$}\;
   \caption{Nearest Insert}
 \end{algorithm}
 
-On line~\ref*{init-pi}, we initialize the permutation $\pi$ to a list of two nodes
-$i,j$, such that their distance $w(i,j)$ in the graph is minimal. We also intialize
-a set $U$ of nodes \ii{yet unused} in $\pi$ (line~\ref*{init-unused}).
+First, we initialize the permutation $\pi$ to a list of two nodes with minimum distance
+(line~\ref*{init-pi}). We also initialize a set $U$ of nodes \ii{yet unused} in $\pi$
+(line~\ref*{init-unused}).
 
-We shall repeat the following steps \bb{while} $U$ is not empty, meaning $\pi$
-does not contain all the nodes. First we need to find the nearest neighbour
-(an unused node) $u$ to some node contained in $\pi$ (at index $i$). We do this
-by looking for a pair where first element is the index in $\pi$ and the second is
-an unused node, such that the nodes $u$ and $\pi[i]$ have minimal distance
-(line~\ref*{argmin-iu}).
+Then we will repeat the following \bb{while} we still have unused nodes ($U$ is nonempty).
+We first find an unused node ($u$) that is a nearest neighbour to one of the nodes
+in $\pi$ (at index $i$) -- so that $w(\pi[i], u)$ is minimal (line~\ref*{argmin-iu}).
 
-Next, we need to decide where to place the new node $u$. We know, that its distance to
-$\pi[i]$ is minimal, but there are two ways to insert it into $\pi$: before $\pi[i]$
-or after it. Therefore, we need to compare the distances to the predecessor and
-successor of $\pi[i]$ in the permutation. We use $\pi[(i\pm 1)\mod|\pi|]$
-(lines~\ref*{dminus},~\ref*{dplus}), because the salesperson's walk is a cycle,
-so the first and last node in $\pi$ are connected as well. We then choose the lower
-distance, because we want to minimize the weight of the permutation overall.
-(\bb{if} statement starting at line~\ref*{choose-insertion-point})
+Next, we need to decide where to insert the new node $u$. We know that its distance to
+$\pi[i]$ is minimal, but we need to decide whether to insert it before $\pi[i]$ or
+after it. Because the permutation is a cycle, we can use $\pi[(i\pm 1)\mod |\pi|]$,
+and then we pick the one that has lower distance to $u$, because we are trying to
+build a cycle of minimum distance (lines~\ref*{dminus},~\ref*{dplus} and the \bb{if}
+starting at line~\ref*{choose-insertion-point}).
 
 After inserting $u$ at the appropriate position, we remove it from $U$ -- we wouldn't want
-to insert the same node multiple times. We also like our algorithms to terminate.
+to insert the same node multiple times.
 
-The running time of this algorithm is $\Theta(n^2)$, where $n=|V|$. This comes
-from the fact that the most significant contributions are done by the $\Theta(n^2)$
-terms. Insertions take $\Theta(n)$ time, due to array representation of the list $\pi$.
+The running time of this algorithm is $\Theta(n^2)$, where $n=|V|$. This is because
+the most significant contributions are done by the $\Theta(n^2)$ terms. Insertions
+take $\Theta(n)$ time, due to array representation of the list $\pi$.
 If we implement $U$ also as a list (as is done in the program), removal from it
-will be $\Theta(|U|)$ (this will start of as $\Theta(n)$ and decrease). The running
+will be $\Theta(|U|)$ (this will start off as $\Theta(n)$ and decrease). The running
 time of lines~\ref*{init-pi}, \ref*{init-unused}, \ref*{argmin-iu} will be elaborated
 in the Appendix~\ref{appendix:runtime-ni}, in the interest of preserving clarity
 in this section.
@@ -136,7 +133,7 @@ intuitively.
 
     \draw[dashed] (3,1) -- (4,1);
 
-    \node (3,-1) {(a)};
+    \node (3,-1) {(0)};
   \end{tikzpicture}
   \hspace{2cm}
   \begin{tikzpicture}[scale=.5,auto=left]
@@ -151,7 +148,7 @@ intuitively.
     \draw[dotted] (4,3) .. controls (3,2) and (3,2) .. (3,1);
     \draw[dotted] (4,3) .. controls (3.5,1.5) and (3.5,1.5) .. (3,1);
 
-    \node (3,-1) {(b)};
+    \node (3,-1) {(1)};
   \end{tikzpicture}
   \hspace{2cm}
   \begin{tikzpicture}[scale=.5,auto=left]
@@ -166,7 +163,7 @@ intuitively.
     \draw[dotted] (3,5) -- (3,1);
     \draw[dotted] (3,5) -- (4,1);
     
-    \node (3,-1) {(c)};
+    \node (3,-1) {(2)};
   \end{tikzpicture}
   \\
   \begin{tikzpicture}[scale=.5,auto=left]
@@ -181,7 +178,7 @@ intuitively.
     \draw[dotted] (1,3) -- (3,5);
     \draw[dotted] (1,3) -- (4,1);
     
-    \node (3,-1) {(d)};
+    \node (3,-1) {(3)};
   \end{tikzpicture}
   \hspace{2cm}
   \begin{tikzpicture}[scale=.5,auto=left]
@@ -193,49 +190,49 @@ intuitively.
 
     \draw (1,3) -- (3,1) -- (4,1) -- (4,3) -- (3,5) -- (1,3);
     
-    \node (3,-1) {(e)};
+    \node (3,-1) {(4)};
   \end{tikzpicture}
 \end{figure}
 
 In these diagrams, \ii{full} lines represent the current permutation $\pi$,
 \ii{dashed}~lines represent the edge that will be definitely added into $\pi$ next
-(line \ref*{init-pi} in initialization, line \ref*{argmin-iu} in loop),
-and \ii{dotted}~lines represent the other two nodes that are being condidered
-(lines \ref*{dminus}, \ref*{dplus}).
-
-\todo{Elaborate? Treba vobec?}
+(line~\ref*{init-pi} in initialization, line~\ref*{argmin-iu} in the \bb{while} loop),
+and \ii{dotted}~lines represent the other two nodes that are being condidered to close
+the cycle (lines~\ref*{dminus},~\ref*{dplus}).
 
 \section{Experiments}
 
-In this part, we were to generate (or write a generator for) many different
-test cases and quantitatively measure how each heuristic (Swap, 2-Opt,
-Greedy, \todo{own}) performs.
+In this part, we created generators for different types and sizes of graphs, and then
+comparatively tested six heuristics: \ii{Swap}, \ii{2-Opt}, \ii{Swap} followed by
+\ii{2-Opt}, \ii{Greedy} and \ii{Nearest Insert}.
 
-\subsection{Test generation}
+We have three cases of our problem: \uu{general} TSP (no other constraints),
+\uu{metric} TSP ($w$ is a metric, so
+$\forall u,v,x\in V\ldotp w(u,v)\le w(u,x) + w(x,v)$), and \uu{Euclidean} TSP
+(the graph is embedded in a plane, this is also metric).
 
-Firstly, let us summarize the assumptions and setting of the problem:
-\begin{itemize}
-\item We have an \uu{undirected}, \uu{complete} graph $G=(V,E)$ where $|V|=n$.
-\item We have a weight function $w:V\times V\to\R^{+}$, such that
-  $\forall i,j\in V \ldotp w(i,j) = w(j,i)$, which will be represented as
-  a \uu{symmetric} matrix \py{Graph.dists[i][j]}\,$= w(i,j)$).
-  We assume $\forall i\in V\ldotp w(i,i)=0$.
-\item We have three cases of our problem: \uu{general} TSP
-  (no other constraints), \uu{metric} TSP ($w$ is a metric, so
-  $\forall u,v,x\in V\ldotp w(u,v)\le w(u,x) + w(x,v)$), and
-  \uu{Euclidean} TSP (the graph is embedded in a plane, this is also metric).
-\end{itemize}
+% \subsection{Test generation}
+
+% Firstly, let us summarize the assumptions and setting of the problem:
+% \begin{itemize}
+% \item We have an \uu{undirected}, \uu{complete} graph $G=(V,E)$ where $|V|=n$.
+% \item We have a weight function $w:V\times V\to\R^{+}$, such that
+%   $\forall i,j\in V \ldotp w(i,j) = w(j,i)$, which will be represented as
+%   a \uu{symmetric} matrix \py{Graph.dists[i][j]}\,$= w(i,j)$).
+%   We assume $\forall i\in V\ldotp w(i,i)=0$.
+% \item 
+% \end{itemize}
 
 The test cases could be generated as completely random graphs. For small graphs
-(\todo{how big?}), it is then feasible to compute the best path, so that we can
+(here $n\le 7$), it is then feasible to compute the best path, so that we can
 compare it to the results from the tested heuristics. However, for larger graphs,
 it will be more useful to generate a graph with some pre-planned best path.
 
-\subsubsection{Small random graphs}
+\subsection{Small random graphs}
 
-Generating these will be simple: we shall populate the matrix
+Generating these will be simple: we will populate the matrix
 \py{Graph.dists} with random positive integers. Then we will
-compute the best TSP path.
+brute-force the best TSP path.
 
 In the \uu{Euclidean} case, we will instead generate randomly positioned
 cities in a plane.
@@ -255,13 +252,13 @@ $d\in\mathbb{Z}^{+}$).
 Since all these graphs will be small, we can get the optimal TSP solution by
 simply trying out all the permutations.
 
-\subsubsection{Larger graphs}
+\subsection{Larger graphs}
 
 A good way to intentionally generate an optimal path in a (general) graph is to create
 a cycle with small weights in it and then assign larger values to all the other
 edges. So:
 \begin{align*}\forall i\in\{0,...,n-2\}\ldotp w(i,i+1) & =\randint(1,5)\\
-  \forall i,j\in{0,...,n-1}\ldotp i\ne j \wedge j\ne i+1 \ldotp
+  \forall i,j\in{0,...,n-1}\ldotp i< j \wedge j\ne i+1 \ldotp
   w(i,j) & = \randint(6,10) \\
 \end{align*}
 The random number boundaries here are somewhat arbitrary, we just need to make
@@ -270,53 +267,89 @@ sure that the cycle has smaller values. In the code, the threshold between these
 
 Once we have this matrix, we swap the vertices around, so that the initial
 permutation $[0,1,...,n-1]$ won't immediately be the solution. We do this by
-generating a graph that is \uu{isomorphic} to the original one. For graph isomorphism,
-we need a \ii{bijection} between the vertices of the old one and the new one. We
+generating a graph that is \uu{isomorphic} to the original one, i.e. $\exists$
+\ii{bijection} between the vertices of the old one and the new one that preserves
+the graph structure. We
 generate a permutation $p:V\to V$ to be this bijection and then create a corresponding
 new weight function $w^\star:V\times V \to \mathbb{R}^{+}$:
 \[ \forall i,j\in V \ldotp
   w^\star\left( p(i), p(j) \right)
-  = w(i,j) \]
+x  = w(i,j) \]
 
-For metric (and Euclidean, which are also metric) graphs, we generate a circle w.r.t.
+For metric (and Euclidean) graphs, we generate a circle w.r.t.
 the particular metric we are using, and then reorder the nodes similarly.
 
 \subsection{Results}
 
+We have tested multiple graphs of different types and sizes. In the following table,
+$W_0$ is the optimal path weight (total distance), and $W_i$ is the weight of the initial
+permutation $\forall i\in \{ 0,...,n-1 \} \ldotp \pi(i)=i$. Types of graphs are
+\bb{G} for general, \bb{M} for metric, and \bb{E} for Euclidean. All measurements are
+averaged over 100 random graphs of the specified type and size.
+
+{\small
 \begin{tabular}{|c c|r r r r r|}
-  \hline Type & $n$ & \shortstack{ Swap \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ TwoOpt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Swap, TwoOpt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Greedy \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ NearestInsert \\ vs. $W_0$ \\ vs. $W_i$ } \\ 
+  \hline Type & $n$ & \shortstack{ Swap \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ 2-Opt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Swap, 2-Opt \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ Greedy \\ vs. $W_0$ \\ vs. $W_i$ } & \shortstack{ NearestInsert \\ vs. $W_0$ \\ vs. $W_i$ } \\
   \hline\hline
-  G & 5 & \shortstack{ 1.003 \\ 0.748 } & \shortstack{ 1.004 \\ 0.748 } & \shortstack{ 1.003 \\ 0.748 } & \shortstack{ 1.053 \\ 0.784 } & \shortstack{ 1.158 \\ 0.856 } \\ 
+  G & 5 & \shortstack{ 1.002 \\ 0.728 } & \shortstack{ 1.003 \\ 0.729 } & \shortstack{ 1.002 \\ 0.728 } & \shortstack{ 1.053 \\ 0.766 } & \shortstack{ 1.133 \\ 0.819 } \\ 
   \hline
-  G & 7 & \shortstack{ 1.23 \\ 0.703 } & \shortstack{ 1.027 \\ 0.596 } & \shortstack{ 1.026 \\ 0.595 } & \shortstack{ 1.113 \\ 0.648 } & \shortstack{ 1.261 \\ 0.726 } \\ 
+  G & 7 & \shortstack{ 1.21 \\ 0.69 } & \shortstack{ 1.028 \\ 0.598 } & \shortstack{ 1.03 \\ 0.598 } & \shortstack{ 1.157 \\ 0.671 } & \shortstack{ 1.246 \\ 0.718 } \\ 
   \hline
-  G & 10 & \shortstack{ 1.545 \\ 0.775 } & \shortstack{ 1.011 \\ 0.513 } & \shortstack{ 1.014 \\ 0.515 } & \shortstack{ 1.074 \\ 0.545 } & \shortstack{ 1.361 \\ 0.685 } \\ 
+  G & 10 & \shortstack{ 1.593 \\ 0.802 } & \shortstack{ 1.018 \\ 0.521 } & \shortstack{ 1.019 \\ 0.522 } & \shortstack{ 1.05 \\ 0.536 } & \shortstack{ 1.433 \\ 0.726 } \\ 
   \hline
-  G & 20 & \shortstack{ 1.929 \\ 0.845 } & \shortstack{ 1.036 \\ 0.458 } & \shortstack{ 1.036 \\ 0.458 } & \shortstack{ 1.058 \\ 0.467 } & \shortstack{ 1.498 \\ 0.659 } \\ 
+  G & 20 & \shortstack{ 1.969 \\ 0.835 } & \shortstack{ 1.044 \\ 0.447 } & \shortstack{ 1.049 \\ 0.449 } & \shortstack{ 1.061 \\ 0.453 } & \shortstack{ 1.543 \\ 0.656 } \\ 
   \hline
-  G & 50 & \shortstack{ 2.226 \\ 0.876 } & \shortstack{ 1.066 \\ 0.422 } & \shortstack{ 1.064 \\ 0.421 } & \shortstack{ 1.04 \\ 0.411 } & \shortstack{ 1.612 \\ 0.636 } \\ 
+  G & 50 & \shortstack{ 2.186 \\ 0.868 } & \shortstack{ 1.063 \\ 0.425 } & \shortstack{ 1.062 \\ 0.424 } & \shortstack{ 1.038 \\ 0.415 } & \shortstack{ 1.601 \\ 0.637 } \\ 
+  \hline
+  G & 100 & \shortstack{ 2.288 \\ 0.879 } & \shortstack{ 1.071 \\ 0.412 } & \shortstack{ 1.065 \\ 0.41 } & \shortstack{ 1.027 \\ 0.395 } & \shortstack{ 1.636 \\ 0.629 } \\ 
+  \hline
+  G & 200 & \shortstack{ 2.343 \\ 0.89 } & \shortstack{ 1.066 \\ 0.406 } & \shortstack{ 1.066 \\ 0.405 } & \shortstack{ 1.015 \\ 0.386 } & \shortstack{ 1.647 \\ 0.626 } \\ 
   \hline\hline
-  M & 5 & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.001 \\ 0.835 } & \shortstack{ 1.046 \\ 0.873 } & \shortstack{ 1.052 \\ 0.874 } \\ 
+  M & 5 & \shortstack{ 1.001 \\ 0.831 } & \shortstack{ 1.001 \\ 0.831 } & \shortstack{ 1.001 \\ 0.831 } & \shortstack{ 1.039 \\ 0.862 } & \shortstack{ 1.048 \\ 0.867 } \\ 
   \hline
-  M & 7 & \shortstack{ 1.164 \\ 0.762 } & \shortstack{ 1.008 \\ 0.665 } & \shortstack{ 1.008 \\ 0.664 } & \shortstack{ 1.087 \\ 0.717 } & \shortstack{ 1.146 \\ 0.753 } \\ 
+  M & 7 & \shortstack{ 1.16 \\ 0.779 } & \shortstack{ 1.012 \\ 0.687 } & \shortstack{ 1.01 \\ 0.685 } & \shortstack{ 1.068 \\ 0.726 } & \shortstack{ 1.17 \\ 0.791 } \\ 
   \hline
-  M & 10 & \shortstack{ 1.606 \\ 0.796 } & \shortstack{ 1.018 \\ 0.507 } & \shortstack{ 1.091 \\ 0.543 } & \shortstack{ 1.174 \\ 0.584 } & \shortstack{ 1.556 \\ 0.774 } \\ 
+  M & 10 & \shortstack{ 1.604 \\ 0.792 } & \shortstack{ 1.051 \\ 0.522 } & \shortstack{ 1.072 \\ 0.533 } & \shortstack{ 1.199 \\ 0.595 } & \shortstack{ 1.556 \\ 0.771 } \\ 
   \hline
-  M & 20 & \shortstack{ 2.679 \\ 0.774 } & \shortstack{ 1.012 \\ 0.293 } & \shortstack{ 1.033 \\ 0.299 } & \shortstack{ 1.342 \\ 0.39 } & \shortstack{ 1.725 \\ 0.5 } \\ 
+  M & 20 & \shortstack{ 2.742 \\ 0.77 } & \shortstack{ 1.014 \\ 0.286 } & \shortstack{ 1.032 \\ 0.29 } & \shortstack{ 1.369 \\ 0.384 } & \shortstack{ 1.723 \\ 0.485 } \\ 
   \hline
-  M & 50 & \shortstack{ 6.556 \\ 0.755 } & \shortstack{ 1.005 \\ 0.116 } & \shortstack{ 1.017 \\ 0.117 } & \shortstack{ 1.206 \\ 0.139 } & \shortstack{ 1.925 \\ 0.222 } \\ 
+  M & 50 & \shortstack{ 6.527 \\ 0.747 } & \shortstack{ 1.011 \\ 0.116 } & \shortstack{ 1.032 \\ 0.118 } & \shortstack{ 1.291 \\ 0.148 } & \shortstack{ 1.926 \\ 0.221 } \\ 
+  \hline
+  M & 100 & \shortstack{ 12.764 \\ 0.76 } & \shortstack{ 1.014 \\ 0.06 } & \shortstack{ 1.018 \\ 0.061 } & \shortstack{ 1.421 \\ 0.085 } & \shortstack{ 1.943 \\ 0.116 } \\ 
+  \hline
+  M & 200 & \shortstack{ 25.35 \\ 0.755 } & \shortstack{ 1.006 \\ 0.03 } & \shortstack{ 1.007 \\ 0.03 } & \shortstack{ 1.424 \\ 0.042 } & \shortstack{ 1.963 \\ 0.058 } \\ 
   \hline\hline
-  E & 5 & \shortstack{ 1.001 \\ 0.827 } & \shortstack{ 1.001 \\ 0.826 } & \shortstack{ 1.001 \\ 0.827 } & \shortstack{ 1.047 \\ 0.865 } & \shortstack{ 1.066 \\ 0.881 } \\ 
+  E & 5 & \shortstack{ 1.001 \\ 0.846 } & \shortstack{ 1.001 \\ 0.846 } & \shortstack{ 1.001 \\ 0.846 } & \shortstack{ 1.049 \\ 0.886 } & \shortstack{ 1.066 \\ 0.898 } \\ 
   \hline
-  E & 7 & \shortstack{ 1.132 \\ 0.801 } & \shortstack{ 1.002 \\ 0.714 } & \shortstack{ 1.004 \\ 0.715 } & \shortstack{ 1.07 \\ 0.763 } & \shortstack{ 1.16 \\ 0.826 } \\ 
+  E & 7 & \shortstack{ 1.176 \\ 0.796 } & \shortstack{ 1.002 \\ 0.683 } & \shortstack{ 1.003 \\ 0.684 } & \shortstack{ 1.062 \\ 0.726 } & \shortstack{ 1.153 \\ 0.785 } \\ 
   \hline
-  E & 10 & \shortstack{ 1.69 \\ 0.779 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.0 \\ 0.464 } & \shortstack{ 1.623 \\ 0.753 } \\ 
+  E & 10 & \shortstack{ 1.697 \\ 0.789 } & \shortstack{ 1.0 \\ 0.468 } & \shortstack{ 1.0 \\ 0.468 } & \shortstack{ 1.0 \\ 0.468 } & \shortstack{ 1.623 \\ 0.759 } \\ 
   \hline
-  E & 20 & \shortstack{ 2.933 \\ 0.75 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.0 \\ 0.257 } & \shortstack{ 1.794 \\ 0.461 } \\ 
+  E & 20 & \shortstack{ 3.019 \\ 0.778 } & \shortstack{ 1.0 \\ 0.258 } & \shortstack{ 1.0 \\ 0.258 } & \shortstack{ 1.0 \\ 0.258 } & \shortstack{ 1.795 \\ 0.463 } \\ 
   \hline
-  E & 50 & \shortstack{ 7.139 \\ 0.757 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.928 \\ 0.205 } \\ 
+  E & 50 & \shortstack{ 7.255 \\ 0.768 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.0 \\ 0.106 } & \shortstack{ 1.928 \\ 0.204 } \\ 
   \hline
-\end{tabular}
+  E & 100 & \shortstack{ 14.051 \\ 0.755 } & \shortstack{ 1.0 \\ 0.054 } & \shortstack{ 1.0 \\ 0.054 } & \shortstack{ 1.0 \\ 0.054 } & \shortstack{ 1.957 \\ 0.105 } \\ 
+  \hline
+  E & 200 & \shortstack{ 28.026 \\ 0.76 } & \shortstack{ 1.0 \\ 0.027 } & \shortstack{ 1.0 \\ 0.027 } & \shortstack{ 1.0 \\ 0.027 } & \shortstack{ 1.978 \\ 0.054 } \\ 
+  \hline
+\end{tabular}}
+
+We see that overall, \ii{Nearest Insert} performs rather poorly compared to the other ones.
+This is true for all kinds of graphs, as \ii{N.I.} doesn't use any special properties
+of metric or Euclidean graphs. It still manages to decrease the total weight of the path
+($W$) w.r.t. the original permutation.
+
+The one that performs surprisingly good is the combination of \ii{Swap} followed by
+\ii{2-Opt}. In a lot of cases, it even finds the optimal solution. Individually though,
+they are not very good.
+
+Right behind those is \ii{Greedy}, which also delivers rather good results. In some cases,
+it can also get the optimal solution.
+
+In conclusion, \ii{Swap + 2-Opt} and \ii{Greedy} deliver very good results usually, and
+most of the times better than \ii{Nearest Insert}.
+
 
 \appendix
 \section*{APPENDIX}
@@ -325,7 +358,7 @@ the particular metric we are using, and then reorder the nodes similarly.
 \section{Running time of Nearest Insert}
 \label{appendix:runtime-ni}
 
-This section concerns the running time of algorithm \todo{name}.
+% This section concerns the running time of algorithm \ii{Nearest Insert}.
 
 \subsection{$\argmin$ on line \ref*{init-pi}}
 
