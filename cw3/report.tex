@@ -64,7 +64,7 @@ submitted, this is \py{Graph.NearestExpand()}.
   Initialize: $\pi \gets [i,j]$, where $(i,j)=\argmin_{(i,j)\in E} w(i,j)$ \nllabel{init-pi}
   \tcc*{$\Theta(n^2)$}
   
-  Initialize: $U = \{ x\in V | x \notin \pi \}$ \nllabel{init-unused}
+  Initialize: $U \gets \{ x\in V | x \notin \pi \}$ \nllabel{init-unused}
   \tcc*{$\Theta(n)$}
   \While{$U \ne \varnothing$  \tcc*{cycle will run $n-2 = \Theta(n)$ times}}{
     $(i, u)\gets \argmin_{(i,v):\;i\in\{0,...,|\pi|-1\},\;v\in U}
@@ -258,7 +258,7 @@ A good way to intentionally generate an optimal path in a (general) graph is to 
 a cycle with small weights in it and then assign larger values to all the other
 edges. So:
 \begin{align*}\forall i\in\{0,...,n-2\}\ldotp w(i,i+1) & =\randint(1,5)\\
-  \forall i,j\in{0,...,n-1}\ldotp i< j \wedge j\ne i+1 \ldotp
+  \forall i,j\in\{0,...,n-1\}\ldotp i< j \wedge j\ne i+1 \ldotp
   w(i,j) & = \randint(6,10) \\
 \end{align*}
 The random number boundaries here are somewhat arbitrary, we just need to make
@@ -274,7 +274,7 @@ generate a permutation $p:V\to V$ to be this bijection and then create a corresp
 new weight function $w^\star:V\times V \to \mathbb{R}^{+}$:
 \[ \forall i,j\in V \ldotp
   w^\star\left( p(i), p(j) \right)
-x  = w(i,j) \]
+  = w(i,j) \]
 
 For metric (and Euclidean) graphs, we generate a circle w.r.t.
 the particular metric we are using, and then reorder the nodes similarly.
